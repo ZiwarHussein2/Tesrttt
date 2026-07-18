@@ -12,11 +12,12 @@ aggregation functions, so they always reconcile.
 
 ```bash
 npm install
-cp .env.example .env          # set a strong AUTH_SECRET in production
-npx prisma migrate deploy     # creates the local SQLite database
+npm run setup                 # creates .env (with a generated AUTH_SECRET) + the database
 npm run build
-npm start                     # or: npm run dev
+npm start                     # then open http://localhost:3000
 ```
+
+Requires Node.js 20+ (`node -v` to check).
 
 Open the app — the **first run** shows a setup wizard that creates the company record and the
 Super Admin account. From there:
