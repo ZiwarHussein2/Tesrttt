@@ -1,14 +1,18 @@
 @import "tailwindcss";
 
 /* Merna Control Center — design tokens derived from DESIGN.md (Vercel design language).
-   Premium monochrome-first enterprise style: ink on near-white, hairline borders,
-   restrained stacked shadows, limited semantic color. */
+   Premium monochrome-first enterprise style in two calibrated themes:
+   light (near-white canvas, ink text) and dark (near-black canvas, light ink).
+   Every utility references these variables, so overriding them under `.dark`
+   flips the entire interface — components never hardcode colors. */
+
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
   /* Surfaces */
   --color-canvas: #ffffff;
   --color-canvas-soft: #fafafa;
-  --color-canvas-soft-2: #f5f5f5;
+  --color-canvas-soft-2: #f0f0f1;
   --color-primary: #171717;
   --color-on-primary: #ffffff;
 
@@ -48,11 +52,105 @@
   --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
 
   /* Elevation (stacked shadows + inset hairline, per DESIGN.md) */
-  --shadow-card: 0 0 0 1px #00000014;
-  --shadow-card-hover: 0px 1px 1px #00000005, 0px 2px 2px #0000000a, 0 0 0 1px #00000014;
-  --shadow-raised: 0px 2px 2px #0000000a, 0px 8px 8px -8px #0000000a, 0 0 0 1px #00000014;
-  --shadow-float: 0px 2px 2px #0000000a, 0px 8px 16px -4px #0000000a, 0 0 0 1px #00000014;
-  --shadow-modal: 0px 1px 1px #00000005, 0px 8px 16px -4px #0000000a, 0px 24px 32px -8px #0000000f, 0 0 0 1px #00000014;
+  --shadow-card: 0 0 0 1px var(--ring-card);
+  --shadow-card-hover: 0px 1px 1px var(--shade-05), 0px 2px 2px var(--shade-10), 0 0 0 1px var(--ring-card);
+  --shadow-raised: 0px 2px 2px var(--shade-10), 0px 8px 8px -8px var(--shade-10), 0 0 0 1px var(--ring-card);
+  --shadow-float: 0px 2px 2px var(--shade-10), 0px 8px 16px -4px var(--shade-10), 0 0 0 1px var(--ring-card);
+  --shadow-modal: 0px 1px 1px var(--shade-05), 0px 8px 16px -4px var(--shade-10), 0px 24px 32px -8px var(--shade-15), 0 0 0 1px var(--ring-card);
+}
+
+/* Non-utility helper variables (charts, rings, selection, heat maps). */
+:root {
+  --ring-card: #00000014;
+  --shade-05: #00000005;
+  --shade-10: #0000000a;
+  --shade-15: #0000000f;
+
+  --chart-ink: #171717;
+  --chart-gray: #a1a1a1;
+  --chart-gray-2: #c9c9c9;
+  --chart-grid: #f0f0f0;
+  --heat-rgb: 23, 23, 23;
+
+  --selection-bg: #171717;
+  --selection-fg: #f2f2f2;
+  --scrollbar-thumb: #d4d4d4;
+
+  color-scheme: light;
+}
+
+/* ── Dark theme ─────────────────────────────────────────────────────────── */
+.dark {
+  --color-canvas: #131316;
+  --color-canvas-soft: #0a0a0b;
+  --color-canvas-soft-2: #202024;
+  --color-primary: #ededed;
+  --color-on-primary: #0a0a0b;
+
+  --color-ink: #ededed;
+  --color-body: #a6a6ad;
+  --color-mute: #71717a;
+
+  --color-hairline: #27272b;
+  --color-hairline-strong: #47474f;
+
+  --color-link: #52a8ff;
+  --color-link-deep: #85c2ff;
+  --color-link-soft: #0e2a4d;
+  --color-ok: #52a8ff;
+  --color-ok-deep: #85c2ff;
+  --color-ok-soft: #0e2a4d;
+  --color-good: #3fce77;
+  --color-good-soft: #0e2b1b;
+  --color-good-deep: #5cdb8d;
+  --color-warning: #f5a623;
+  --color-warning-soft: #33260d;
+  --color-warning-deep: #f2b95a;
+  --color-critical: #ff5c5c;
+  --color-critical-soft: #3a1215;
+  --color-critical-deep: #ff8585;
+  --color-violet: #a262e8;
+  --color-violet-soft: #2a1840;
+  --color-violet-deep: #c49dff;
+  --color-ai: #a262e8;
+  --color-ai-soft: #211636;
+
+  --ring-card: #ffffff17;
+  --shade-05: #00000033;
+  --shade-10: #00000055;
+  --shade-15: #00000077;
+
+  --chart-ink: #ededed;
+  --chart-gray: #6b6b74;
+  --chart-gray-2: #47474f;
+  --chart-grid: #232327;
+  --heat-rgb: 237, 237, 237;
+
+  --selection-bg: #ededed;
+  --selection-fg: #171717;
+  --scrollbar-thumb: #3a3a41;
+
+  color-scheme: dark;
+}
+
+/* Formal print documents (reports, evidence packages) always print in light. */
+@media print {
+  :root, .dark {
+    --color-canvas: #ffffff;
+    --color-canvas-soft: #ffffff;
+    --color-canvas-soft-2: #f0f0f1;
+    --color-primary: #171717;
+    --color-on-primary: #ffffff;
+    --color-ink: #171717;
+    --color-body: #4d4d4d;
+    --color-mute: #888888;
+    --color-hairline: #ebebeb;
+    --color-hairline-strong: #a1a1a1;
+    --chart-ink: #171717;
+    --chart-gray: #a1a1a1;
+    --chart-grid: #f0f0f0;
+    color-scheme: light;
+  }
 }
 
 html {
@@ -70,15 +168,29 @@ body {
 }
 
 ::selection {
-  background: #171717;
-  color: #f2f2f2;
+  background: var(--selection-bg);
+  color: var(--selection-fg);
 }
 
 /* Focus visibility (WCAG) */
 :focus-visible {
-  outline: 2px solid #171717;
+  outline: 2px solid var(--color-ink);
   outline-offset: 2px;
   border-radius: 2px;
+}
+
+/* Native form controls follow the theme */
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--color-primary);
+}
+
+/* Native disclosure markers are hidden — components draw their own affordances. */
+summary {
+  list-style: none;
+}
+summary::-webkit-details-marker {
+  display: none;
 }
 
 /* Reduced motion */
@@ -101,18 +213,21 @@ body {
   width: 8px;
 }
 .thin-scroll::-webkit-scrollbar-thumb {
-  background: #d4d4d4;
+  background: var(--scrollbar-thumb);
   border-radius: 4px;
 }
 .thin-scroll::-webkit-scrollbar-track {
   background: transparent;
 }
 
-/* Recharts polish */
+/* Recharts polish (theme-aware) */
 .recharts-cartesian-axis-tick text {
   font-size: 11px;
-  fill: #888888;
+  fill: var(--color-mute);
 }
 .recharts-tooltip-cursor {
-  fill: #f5f5f5;
+  fill: var(--color-canvas-soft-2);
+}
+.recharts-legend-item-text {
+  color: var(--color-body) !important;
 }

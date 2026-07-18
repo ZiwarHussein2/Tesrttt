@@ -146,7 +146,7 @@ export default async function LegalPage({ searchParams }: { searchParams: Promis
                 </div>
                 <button
                   type="submit"
-                  className="inline-flex h-9 w-full items-center justify-center rounded-md bg-primary px-3 text-[13px] font-medium text-on-primary hover:bg-black"
+                  className="inline-flex h-9 w-full items-center justify-center rounded-md bg-primary px-3 text-[13px] font-medium text-on-primary hover:bg-primary/85"
                 >
                   <Scale size={14} className="mr-2" />
                   Build evidence package

@@ -133,7 +133,7 @@ export default async function DepartmentPage({
           <>
             <Link
               href={`/queues?department=${department.id}`}
-              className="inline-flex h-8 items-center rounded-md bg-primary px-3 text-[13px] font-medium text-on-primary hover:bg-black"
+              className="inline-flex h-8 items-center rounded-md bg-primary px-3 text-[13px] font-medium text-on-primary hover:bg-primary/85"
             >
               Open queue board
             </Link>
@@ -240,7 +240,7 @@ export default async function DepartmentPage({
                     </div>
                   </div>
                   <label className="flex items-center gap-2 text-[13px] text-body">
-                    <input type="checkbox" name="reportRequired" className="h-3.5 w-3.5 accent-[#171717]" />
+                    <input type="checkbox" name="reportRequired" className="h-3.5 w-3.5" />
                     Requires a written doctor report
                   </label>
                 </ActionDialog>
@@ -308,7 +308,7 @@ export default async function DepartmentPage({
                             <Input id={`pr-${s.id}`} name="reason" placeholder="Why is the price changing?" required />
                           </div>
                           <label className="flex items-center gap-2 text-[13px] text-body">
-                            <input type="checkbox" name="active" defaultChecked={s.active} className="h-3.5 w-3.5 accent-[#171717]" />
+                            <input type="checkbox" name="active" defaultChecked={s.active} className="h-3.5 w-3.5" />
                             Service active
                           </label>
                         </ActionDialog>
@@ -337,7 +337,7 @@ export default async function DepartmentPage({
                               <Input id={`rq-${s.id}`} name="quantity" type="number" min={0.1} step="0.1" defaultValue={1} required />
                             </div>
                             <label className="flex h-9 items-center gap-2 text-[13px] text-body">
-                              <input type="checkbox" name="optional" className="h-3.5 w-3.5 accent-[#171717]" />
+                              <input type="checkbox" name="optional" className="h-3.5 w-3.5" />
                               Optional
                             </label>
                           </div>

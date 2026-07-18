@@ -134,9 +134,9 @@ export default async function FinancePage() {
                   data={trend}
                   money
                   series={[
-                    { key: "revenue", label: "Revenue", color: "#171717" },
-                    { key: "expenses", label: "Expenses", color: "#a1a1a1" },
-                    { key: "net", label: "Net", color: "#0070f3" },
+                    { key: "revenue", label: "Revenue", color: "var(--chart-ink)" },
+                    { key: "expenses", label: "Expenses", color: "var(--chart-gray)" },
+                    { key: "net", label: "Net", color: "var(--color-link)" },
                   ]}
                 />
               </CardBody>
@@ -147,10 +147,10 @@ export default async function FinancePage() {
               <CardBody>
                 <Waterfall
                   data={[
-                    { label: "Revenue", base: 0, value: fin.revenue, color: "#171717" },
-                    { label: "Payroll", base: fin.revenue - fin.payrollExpense, value: fin.payrollExpense, color: "#a1a1a1" },
-                    { label: "Other expenses", base: fin.net, value: Math.max(0, fin.expenses - fin.payrollExpense), color: "#c9c9c9" },
-                    { label: "Net", base: 0, value: Math.max(0, fin.net), color: fin.net >= 0 ? "#0070f3" : "#ee0000" },
+                    { label: "Revenue", base: 0, value: fin.revenue, color: "var(--chart-ink)" },
+                    { label: "Payroll", base: fin.revenue - fin.payrollExpense, value: fin.payrollExpense, color: "var(--chart-gray)" },
+                    { label: "Other expenses", base: fin.net, value: Math.max(0, fin.expenses - fin.payrollExpense), color: "var(--chart-gray-2)" },
+                    { label: "Net", base: 0, value: Math.max(0, fin.net), color: fin.net >= 0 ? "var(--color-link)" : "var(--color-critical)" },
                   ]}
                 />
               </CardBody>
@@ -168,9 +168,9 @@ export default async function FinancePage() {
                     net: b.fin.net,
                   }))}
                   series={[
-                    { key: "revenue", label: "Revenue", color: "#171717" },
-                    { key: "expenses", label: "Expenses", color: "#a1a1a1" },
-                    { key: "net", label: "Net", color: "#0070f3" },
+                    { key: "revenue", label: "Revenue", color: "var(--chart-ink)" },
+                    { key: "expenses", label: "Expenses", color: "var(--chart-gray)" },
+                    { key: "net", label: "Net", color: "var(--color-link)" },
                   ]}
                 />
               </CardBody>

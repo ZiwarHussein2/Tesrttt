@@ -29,7 +29,7 @@ export function HBarList({
           <div className="h-1.5 overflow-hidden rounded-full bg-canvas-soft-2">
             <div
               className="h-full rounded-full"
-              style={{ width: `${(Math.abs(item.value) / max) * 100}%`, background: item.color ?? "#171717" }}
+              style={{ width: `${(Math.abs(item.value) / max) * 100}%`, background: item.color ?? "var(--chart-ink)" }}
             />
           </div>
         </div>
@@ -142,7 +142,7 @@ export function HeatGrid({
                     <div
                       className="h-7 min-w-9 rounded-sm"
                       title={`${r} · ${c}: ${(v * 100).toFixed(0)}%`}
-                      style={{ background: `rgba(23,23,23,${0.05 + v * 0.85})` }}
+                      style={{ background: `rgba(var(--heat-rgb), ${0.05 + v * 0.85})` }}
                     />
                   </td>
                 );
@@ -168,11 +168,11 @@ export function ScoreRing({
   const r = (size - 8) / 2;
   const c = 2 * Math.PI * r;
   const filled = (score / 100) * c;
-  const color = score >= 80 ? "#15803d" : score >= 60 ? "#ab570a" : "#c50000";
+  const color = score >= 80 ? "var(--color-good-deep)" : score >= 60 ? "var(--color-warning-deep)" : "var(--color-critical-deep)";
   return (
     <div className="relative inline-flex items-center justify-center" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#f0f0f0" strokeWidth="5" />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--color-canvas-soft-2)" strokeWidth="5" />
         <circle
           cx={size / 2} cy={size / 2} r={r} fill="none" stroke={color} strokeWidth="5"
           strokeDasharray={`${filled} ${c - filled}`} strokeLinecap="round"

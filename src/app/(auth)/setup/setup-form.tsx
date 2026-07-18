@@ -31,7 +31,7 @@ export function SetupForm() {
         </div>
         <div>
           <Label htmlFor="email" required>Admin email</Label>
-          <Input id="email" name="email" type="email" autoComplete="email" placeholder="admin@merna.example" required />
+          <Input id="email" name="email" type="email" autoComplete="email" placeholder="Admin email address" required />
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>

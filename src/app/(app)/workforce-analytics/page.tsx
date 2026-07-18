@@ -128,8 +128,8 @@ export default async function WorkforceAnalyticsPage() {
             <TrendLines
               data={trend}
               series={[
-                { key: "rate", label: "Attendance %", color: "#171717" },
-                { key: "overtimeH", label: "Overtime (h)", color: "#f5a623" },
+                { key: "rate", label: "Attendance %", color: "var(--chart-ink)" },
+                { key: "overtimeH", label: "Overtime (h)", color: "var(--color-warning)" },
               ]}
             />
           </CardBody>
@@ -155,7 +155,7 @@ export default async function WorkforceAnalyticsPage() {
         <Card>
           <CardHeader title="Attendance heat map" subtitle="By branch and weekday" />
           <CardBody>
-            <HeatGrid rows={branches.map((b) => b.name)} cols={weekdays} cells={heatCells} legend="Darker = higher attendance" />
+            <HeatGrid rows={branches.map((b) => b.name)} cols={weekdays} cells={heatCells} legend="Stronger shade = higher attendance" />
           </CardBody>
         </Card>
         {!masking.employeeSalary && (

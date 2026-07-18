@@ -26,6 +26,9 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+// Applies the stored (or system) theme before first paint to avoid flashing.
+const themeInit = `(function(){try{var t=localStorage.getItem("mcc_theme");if(t==="dark"||(!t&&window.matchMedia("(prefers-color-scheme: dark)").matches)){document.documentElement.classList.add("dark")}}catch(e){}})()`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -34,9 +37,13 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <script dangerouslySetInnerHTML={{ __html: themeInit }} />
+        {children}
+      </body>
     </html>
   );
 }

@@ -167,9 +167,9 @@ export default async function ComparePage({
                 net: d.fin.net,
               }))}
               series={[
-                { key: "revenue", label: "Revenue", color: "#171717" },
-                { key: "expenses", label: "Expenses", color: "#a1a1a1" },
-                { key: "net", label: "Net", color: "#0070f3" },
+                { key: "revenue", label: "Revenue", color: "var(--chart-ink)" },
+                { key: "expenses", label: "Expenses", color: "var(--chart-gray)" },
+                { key: "net", label: "Net", color: "var(--color-link)" },
               ]}
             />
           </CardBody>
@@ -185,9 +185,9 @@ export default async function ComparePage({
                 backlog: d.ops.reportBacklog,
               }))}
               series={[
-                { key: "visits", label: "Visits", color: "#171717" },
-                { key: "employees", label: "Employees", color: "#a1a1a1" },
-                { key: "backlog", label: "Report backlog", color: "#f5a623" },
+                { key: "visits", label: "Visits", color: "var(--chart-ink)" },
+                { key: "employees", label: "Employees", color: "var(--chart-gray)" },
+                { key: "backlog", label: "Report backlog", color: "var(--color-warning)" },
               ]}
             />
           </CardBody>

@@ -195,7 +195,7 @@ export default async function RadiologyPage() {
               rows={types.map((t) => DEPARTMENT_TYPE_LABELS[t as keyof typeof DEPARTMENT_TYPE_LABELS] ?? t)}
               cols={branches}
               cells={heat}
-              legend="Darker = higher utilization vs capacity"
+              legend="Stronger shade = higher utilization vs capacity"
             />
           </CardBody>
         </Card>

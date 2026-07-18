@@ -246,14 +246,14 @@ export default async function ReportWorkflowPage() {
                                 </div>
                                 <div>
                                   <Label htmlFor={`rg-${d.id}`}>Last access region</Label>
-                                  <Input id={`rg-${d.id}`} name="lastAccessRegion" defaultValue={d.lastAccessRegion ?? ""} placeholder="e.g. Erbil, IQ" />
+                                  <Input id={`rg-${d.id}`} name="lastAccessRegion" defaultValue={d.lastAccessRegion ?? ""} placeholder="City, country" />
                                 </div>
                                 <label className="flex items-center gap-2 text-[13px] text-body">
-                                  <input type="checkbox" name="approvedDevice" defaultChecked={d.approvedDevice} className="h-3.5 w-3.5 accent-[#171717]" />
+                                  <input type="checkbox" name="approvedDevice" defaultChecked={d.approvedDevice} className="h-3.5 w-3.5" />
                                   Device approved
                                 </label>
                                 <label className="flex items-center gap-2 text-[13px] text-body">
-                                  <input type="checkbox" name="suspiciousFlag" defaultChecked={d.suspiciousFlag} className="h-3.5 w-3.5 accent-[#171717]" />
+                                  <input type="checkbox" name="suspiciousFlag" defaultChecked={d.suspiciousFlag} className="h-3.5 w-3.5" />
                                   Flag for review (suspicious access)
                                 </label>
                                 <div>

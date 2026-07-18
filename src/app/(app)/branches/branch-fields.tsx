@@ -20,18 +20,18 @@ export function BranchFields({
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <Label htmlFor="bf-name" required>Branch name</Label>
-          <Input id="bf-name" name="name" defaultValue={defaults?.name} placeholder="Leen Life — Erbil" required />
+          <Input id="bf-name" name="name" defaultValue={defaults?.name} placeholder="Branch name" required />
         </div>
         <div>
           <Label htmlFor="bf-code" required>Branch code</Label>
-          <Input id="bf-code" name="code" defaultValue={defaults?.code} placeholder="LL-ERB" required />
+          <Input id="bf-code" name="code" defaultValue={defaults?.code} placeholder="e.g. BR-01" required />
           <Hint>Short unique identifier used in records and reports.</Hint>
         </div>
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <Label htmlFor="bf-city" required>City</Label>
-          <Input id="bf-city" name="city" defaultValue={defaults?.city} placeholder="Erbil" required />
+          <Input id="bf-city" name="city" defaultValue={defaults?.city} placeholder="City" required />
         </div>
         <div>
           <Label htmlFor="bf-status">Operating status</Label>
@@ -53,7 +53,7 @@ export function BranchFields({
         </div>
         <div>
           <Label htmlFor="bf-email">Email</Label>
-          <Input id="bf-email" name="email" type="email" defaultValue={defaults?.email ?? ""} placeholder="branch@merna.example" />
+          <Input id="bf-email" name="email" type="email" defaultValue={defaults?.email ?? ""} placeholder="Branch email" />
         </div>
       </div>
     </>

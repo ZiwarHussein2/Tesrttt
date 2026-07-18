@@ -17,6 +17,7 @@ import { initials } from "@/lib/format";
 import type { NavSection } from "@/components/shell/nav";
 import { setBranchScope, setDateRange, logoutAction } from "@/app/(app)/shell-actions";
 import { CommandPalette } from "@/components/shell/command-palette";
+import { ThemeToggle } from "@/components/shell/theme-toggle";
 
 const ICONS: Record<string, LucideIcon> = {
   LayoutDashboard, Building2, Activity, Sparkles, ChartPie, TrendingUp, Receipt,
@@ -241,7 +242,7 @@ export function AppShell({
               value={scope.range}
               onChange={(e) => startTransition(() => setDateRange(e.target.value))}
               className={cn(
-                "hidden h-8 cursor-pointer appearance-none rounded-md border border-hairline bg-canvas pl-2.5 pr-7 text-[13px] text-body outline-none transition-colors hover:border-hairline-strong sm:block",
+                "hidden h-8 cursor-pointer appearance-none rounded-md border border-hairline bg-canvas pl-2.5 pr-7 text-[13px] text-body outline-none transition-colors hover:border-hairline-strong md:block",
                 "bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23888%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[position:right_8px_center] bg-no-repeat",
               )}
             >
@@ -256,7 +257,7 @@ export function AppShell({
           {/* Search / command palette */}
           <button
             onClick={() => setPaletteOpen(true)}
-            className="hidden h-8 items-center gap-2 rounded-md border border-hairline bg-canvas px-3 text-[13px] text-mute transition-colors hover:border-hairline-strong md:flex"
+            className="hidden h-8 items-center gap-2 rounded-md border border-hairline bg-canvas px-3 text-[13px] text-mute transition-colors hover:border-hairline-strong xl:flex"
             aria-label="Open command palette"
           >
             <Search size={14} />
@@ -265,7 +266,7 @@ export function AppShell({
           </button>
           <button
             onClick={() => setPaletteOpen(true)}
-            className="rounded-md p-2 text-body hover:bg-canvas-soft-2 md:hidden"
+            className="rounded-md p-2 text-body hover:bg-canvas-soft-2 xl:hidden"
             aria-label="Search"
           >
             <Search size={18} />
@@ -274,11 +275,13 @@ export function AppShell({
           {/* Merna AI shortcut */}
           <Link
             href="/merna-ai"
-            className="hidden h-8 items-center gap-1.5 rounded-md border border-hairline px-2.5 text-[13px] font-medium text-violet-deep transition-colors hover:border-violet hover:bg-ai-soft sm:flex"
+            className="hidden h-8 items-center gap-1.5 rounded-md border border-hairline px-2.5 text-[13px] font-medium text-violet-deep transition-colors hover:border-violet hover:bg-ai-soft xl:flex"
           >
             <Sparkles size={14} />
             Merna AI
           </Link>
+
+          <ThemeToggle />
 
           {/* Notifications */}
           <Link

@@ -49,6 +49,8 @@ Super Admin account. From there:
 - **Merna AI**: a local deterministic analysis engine (no external AI call, no API key) behind a
   provider interface ready for a future Gemma 4 server-side integration — see `docs/GEMMA4_AI.md`.
 - **Client-side PDFs**: formal reports and AI analyses are generated in the browser (jsPDF).
+- **Light & dark themes**: full token-based theming with a top-bar toggle, system-preference
+  default, no flash on load, theme-aware charts — and formal documents always print in light.
 - **Responsive**: desktop sidebar → tablet drawer → mobile bottom navigation; WCAG-minded
   focus, labels, color-independent status badges and reduced-motion support.
 

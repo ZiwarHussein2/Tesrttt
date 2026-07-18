@@ -84,7 +84,7 @@ export default async function DashboardPage({
           title="Set up your first branch"
           description="Create a branch, add its departments and services, register employees and start operating. Every module fills with live data as the organization works."
           action={
-            <Link href="/branches" className="inline-flex h-9 items-center gap-2 rounded-md bg-primary px-4 text-[13px] font-medium text-on-primary hover:bg-black">
+            <Link href="/branches" className="inline-flex h-9 items-center gap-2 rounded-md bg-primary px-4 text-[13px] font-medium text-on-primary hover:bg-primary/85">
               Create the first branch <ArrowRight size={14} />
             </Link>
           }
@@ -202,7 +202,7 @@ export default async function DashboardPage({
       />
 
       {/* KPI cards */}
-      <div className="mb-4 grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-8">
+      <div className="mb-4 grid grid-cols-2 gap-3 md:grid-cols-4 2xl:grid-cols-8">
         <KpiCard label="Total revenue" value={fmtIQDCompact(fin.revenue)} delta={pctChange(fin.revenue, prevFin.revenue)}
           spark={trend.map((t) => t.revenue as number)} definition="Sum of income entries received in the period." href="/finance/income" />
         <KpiCard label="Total expenses" value={fmtIQDCompact(fin.expenses)} delta={pctChange(fin.expenses, prevFin.expenses)} invertDelta
@@ -351,9 +351,9 @@ export default async function DashboardPage({
                 data={trend}
                 money
                 series={[
-                  { key: "revenue", label: "Revenue", color: "#171717" },
-                  { key: "expenses", label: "Expenses", color: "#a1a1a1" },
-                  { key: "net", label: "Net", color: "#0070f3" },
+                  { key: "revenue", label: "Revenue", color: "var(--chart-ink)" },
+                  { key: "expenses", label: "Expenses", color: "var(--chart-gray)" },
+                  { key: "net", label: "Net", color: "var(--color-link)" },
                 ]}
               />
             ) : (
@@ -405,7 +405,7 @@ export default async function DashboardPage({
                 rows={rows.map((r) => r.name)}
                 cols={heatTypes.map((t) => DEPARTMENT_TYPE_LABELS[t as keyof typeof DEPARTMENT_TYPE_LABELS] ?? t)}
                 cells={heatCells}
-                legend="Darker = heavier live queue load"
+                legend="Stronger shade = heavier live queue load"
               />
             ) : (
               <p className="py-8 text-center text-[13px] text-mute">No active departments.</p>

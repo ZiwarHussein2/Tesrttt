@@ -76,12 +76,12 @@ export default async function SecurityPage() {
       />
 
       <div className="mb-4 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
-        <div className="col-span-2 flex items-center gap-4 rounded-lg bg-canvas p-4 shadow-card md:col-span-1">
+        <div
+          className="col-span-2 flex items-center justify-center gap-4 rounded-lg bg-canvas p-4 shadow-card md:col-span-1 md:flex-col md:gap-1.5 md:text-center"
+          title="Computed from open incidents, open security alerts, locked accounts and failed sign-ins."
+        >
           <ScoreRing score={posture} size={64} label="/100" />
-          <div>
-            <p className="text-[12px] font-medium text-mute">Security posture</p>
-            <p className="text-[11.5px] leading-snug text-body">Computed from incidents, alerts, lockouts and failed sign-ins.</p>
-          </div>
+          <p className="text-[12px] font-medium text-mute">Security posture</p>
         </div>
         <KpiCard label="Active sessions" value={fmtNumber(sec.activeSessions)} />
         <KpiCard label="MFA coverage" value={sec.mfaCoverage !== null ? fmtPercent(sec.mfaCoverage) : "—"} tone={sec.mfaCoverage !== null && sec.mfaCoverage < 50 ? "warning" : undefined} definition="Accounts with the MFA flag enabled. Enforcement ships with the production identity provider." />
@@ -112,7 +112,7 @@ export default async function SecurityPage() {
             subtitle="Proposed — not yet active in this deployment"
           />
           <CardBody>
-            <pre className="overflow-x-auto thin-scroll rounded-md bg-primary p-4 font-mono text-[11.5px] leading-relaxed text-on-primary">
+            <pre className="overflow-x-auto thin-scroll rounded-md bg-[#171717] p-4 font-mono text-[11.5px] leading-relaxed text-[#ededed] dark:bg-[#0c0c0e] dark:ring-1 dark:ring-hairline">
 {`User
   → HTTPS / WAF
   → Application Gateway (rate limits, MFA)

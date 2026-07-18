@@ -453,7 +453,7 @@ async function Agreements({ employee, writable, evidenceMasked }: { employee: Em
                         ["locationRecorded", "Location confirmation recorded"],
                       ].map(([nameKey, label]) => (
                         <label key={nameKey} className="flex items-center gap-2 text-[13px] text-body">
-                          <input type="checkbox" name={nameKey} className="h-3.5 w-3.5 accent-[#171717]" />
+                          <input type="checkbox" name={nameKey} className="h-3.5 w-3.5" />
                           {label}
                         </label>
                       ))}
@@ -532,11 +532,11 @@ async function Policies({ employee, writable }: { employee: EmployeeFull; writab
                         <input type="hidden" name="policyId" value={p.id} />
                         <input type="hidden" name="employeeId" value={employee.id} />
                         <label className="flex items-center gap-2 text-[13px] text-body">
-                          <input type="checkbox" name="otpVerified" className="h-3.5 w-3.5 accent-[#171717]" />
+                          <input type="checkbox" name="otpVerified" className="h-3.5 w-3.5" />
                           OTP verification completed
                         </label>
                         <label className="flex items-center gap-2 text-[13px] text-body">
-                          <input type="checkbox" name="deviceRecorded" className="h-3.5 w-3.5 accent-[#171717]" />
+                          <input type="checkbox" name="deviceRecorded" className="h-3.5 w-3.5" />
                           Device recorded
                         </label>
                       </ActionDialog>

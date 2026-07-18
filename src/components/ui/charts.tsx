@@ -9,7 +9,10 @@ import {
 // Recharts wrappers with the Merna monochrome-first chart style.
 // Palette: ink primary, gray secondary, semantic colors only for status.
 
-export const CHART_COLORS = ["#171717", "#8f8f8f", "#0070f3", "#7928ca", "#f5a623", "#ee0000", "#29bc9b"];
+export const CHART_COLORS = [
+  "var(--chart-ink)", "var(--chart-gray)", "var(--color-link)", "var(--color-violet)",
+  "var(--color-warning)", "var(--color-critical)", "#29bc9b",
+];
 
 function compactIQD(v: number): string {
   const abs = Math.abs(v);
@@ -21,11 +24,12 @@ function compactIQD(v: number): string {
 
 const tooltipStyle: React.CSSProperties = {
   borderRadius: 8,
-  border: "1px solid #ebebeb",
-  boxShadow: "0px 2px 2px #0000000a, 0px 8px 16px -4px #0000000a",
+  border: "1px solid var(--color-hairline)",
+  boxShadow: "var(--shadow-raised)",
   fontSize: 12,
   padding: "8px 10px",
-  background: "#ffffff",
+  background: "var(--color-canvas)",
+  color: "var(--color-ink)",
 };
 
 function fmtVal(v: unknown, money: boolean, digits = 0): string {
@@ -55,8 +59,8 @@ export function TrendLines({
   return (
     <ResponsiveContainer width="100%" height={height}>
       <LineChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: money ? 8 : 0 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-        <XAxis dataKey="label" tickLine={false} axisLine={{ stroke: "#ebebeb" }} interval="preserveStartEnd" minTickGap={24} />
+        <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+        <XAxis dataKey="label" tickLine={false} axisLine={{ stroke: "var(--color-hairline)" }} interval="preserveStartEnd" minTickGap={24} />
         <YAxis tickLine={false} axisLine={false} width={money ? 44 : 36} tickFormatter={(v) => (money ? compactIQD(v) : compactIQD(v))} />
         <Tooltip contentStyle={tooltipStyle} formatter={(v: unknown, name: unknown) => [fmtVal(v, money), String(name)]} />
         {series.length > 1 && <Legend wrapperStyle={{ fontSize: 12 }} iconSize={10} />}
@@ -93,8 +97,8 @@ export function AreaTrend({
   return (
     <ResponsiveContainer width="100%" height={height}>
       <AreaChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: money ? 8 : 0 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-        <XAxis dataKey="label" tickLine={false} axisLine={{ stroke: "#ebebeb" }} interval="preserveStartEnd" minTickGap={24} />
+        <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+        <XAxis dataKey="label" tickLine={false} axisLine={{ stroke: "var(--color-hairline)" }} interval="preserveStartEnd" minTickGap={24} />
         <YAxis tickLine={false} axisLine={false} width={money ? 44 : 36} tickFormatter={(v) => compactIQD(v)} />
         <Tooltip contentStyle={tooltipStyle} formatter={(v: unknown, name: unknown) => [fmtVal(v, money), String(name)]} />
         {series.length > 1 && <Legend wrapperStyle={{ fontSize: 12 }} iconSize={10} />}
@@ -138,15 +142,15 @@ export function CompareBars({
         layout={horizontal ? "vertical" : "horizontal"}
         margin={{ top: 8, right: 8, bottom: 0, left: horizontal ? 24 : money ? 8 : 0 }}
       >
-        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={horizontal} horizontal={!horizontal} />
+        <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={horizontal} horizontal={!horizontal} />
         {horizontal ? (
           <>
             <XAxis type="number" tickLine={false} axisLine={false} tickFormatter={(v) => compactIQD(v)} />
-            <YAxis type="category" dataKey="label" tickLine={false} axisLine={{ stroke: "#ebebeb" }} width={110} />
+            <YAxis type="category" dataKey="label" tickLine={false} axisLine={{ stroke: "var(--color-hairline)" }} width={110} />
           </>
         ) : (
           <>
-            <XAxis dataKey="label" tickLine={false} axisLine={{ stroke: "#ebebeb" }} interval={0} minTickGap={8} />
+            <XAxis dataKey="label" tickLine={false} axisLine={{ stroke: "var(--color-hairline)" }} interval={0} minTickGap={8} />
             <YAxis tickLine={false} axisLine={false} width={money ? 44 : 36} tickFormatter={(v) => compactIQD(v)} />
           </>
         )}
@@ -179,8 +183,8 @@ export function Waterfall({
   return (
     <ResponsiveContainer width="100%" height={height}>
       <BarChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 8 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-        <XAxis dataKey="label" tickLine={false} axisLine={{ stroke: "#ebebeb" }} interval={0} />
+        <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+        <XAxis dataKey="label" tickLine={false} axisLine={{ stroke: "var(--color-hairline)" }} interval={0} />
         <YAxis tickLine={false} axisLine={false} width={44} tickFormatter={(v) => compactIQD(v)} />
         <Tooltip
           contentStyle={tooltipStyle}
@@ -189,7 +193,7 @@ export function Waterfall({
         <Bar dataKey="base" stackId="w" fill="transparent" />
         <Bar dataKey="value" stackId="w" maxBarSize={48}>
           {data.map((d, i) => (
-            <Cell key={i} fill={d.color ?? "#171717"} radius={3} />
+            <Cell key={i} fill={d.color ?? "var(--chart-ink)"} radius={3} />
           ))}
         </Bar>
       </BarChart>
@@ -213,9 +217,9 @@ export function ScatterPlot({
   return (
     <ResponsiveContainer width="100%" height={height}>
       <ScatterChart margin={{ top: 12, right: 12, bottom: 8, left: 8 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-        <XAxis type="number" dataKey="x" name={xLabel} tickLine={false} axisLine={{ stroke: "#ebebeb" }} tickFormatter={(v) => compactIQD(v)} label={{ value: xLabel, position: "insideBottom", offset: -4, fontSize: 11, fill: "#888" }} />
-        <YAxis type="number" dataKey="y" name={yLabel} tickLine={false} axisLine={false} width={44} tickFormatter={(v) => compactIQD(v)} label={{ value: yLabel, angle: -90, position: "insideLeft", fontSize: 11, fill: "#888" }} />
+        <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
+        <XAxis type="number" dataKey="x" name={xLabel} tickLine={false} axisLine={{ stroke: "var(--color-hairline)" }} tickFormatter={(v) => compactIQD(v)} label={{ value: xLabel, position: "insideBottom", offset: -4, fontSize: 11, fill: "var(--color-mute)" }} />
+        <YAxis type="number" dataKey="y" name={yLabel} tickLine={false} axisLine={false} width={44} tickFormatter={(v) => compactIQD(v)} label={{ value: yLabel, angle: -90, position: "insideLeft", fontSize: 11, fill: "var(--color-mute)" }} />
         <ZAxis range={[50, 51]} />
         <Tooltip
           contentStyle={tooltipStyle}
@@ -234,7 +238,7 @@ export function ScatterPlot({
             );
           }}
         />
-        <Scatter data={data} fill="#171717" fillOpacity={0.75} />
+        <Scatter data={data} fill="var(--chart-ink)" fillOpacity={0.75} />
       </ScatterChart>
     </ResponsiveContainer>
   );

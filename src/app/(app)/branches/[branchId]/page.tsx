@@ -157,9 +157,9 @@ async function OverviewTab({ branchId, range }: { branchId: string; range: R }) 
                 data={trend}
                 money
                 series={[
-                  { key: "revenue", label: "Revenue", color: "#171717" },
-                  { key: "expenses", label: "Expenses", color: "#a1a1a1" },
-                  { key: "net", label: "Net", color: "#0070f3" },
+                  { key: "revenue", label: "Revenue", color: "var(--chart-ink)" },
+                  { key: "expenses", label: "Expenses", color: "var(--chart-gray)" },
+                  { key: "net", label: "Net", color: "var(--color-link)" },
                 ]}
               />
             ) : (

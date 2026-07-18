@@ -55,7 +55,7 @@ export default async function ReferralsPage() {
     >
       <div>
         <Label htmlFor="rf-name" required>Name</Label>
-        <Input id="rf-name" name="name" placeholder="Dr. Ziwar" required />
+        <Input id="rf-name" name="name" placeholder="Doctor's full name" required />
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
@@ -113,7 +113,7 @@ export default async function ReferralsPage() {
         <EmptyState
           icon={<UserPlus size={18} strokeWidth={1.5} />}
           title="No referral doctors yet"
-          description="Add referring doctors and their deals. Example: Dr. Ziwar — fixed 10,000 IQD per referred patient; Dr. Mohammed — 10,000 IQD share converted into a patient discount."
+          description="Add referring doctors and their deals: fixed commission per referred patient, a percentage of the visit price, no commission, or a commission converted into a patient discount."
           action={addDialog}
         />
       ) : (

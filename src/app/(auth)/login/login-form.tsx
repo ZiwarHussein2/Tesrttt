@@ -20,7 +20,7 @@ export function LoginForm() {
             name="email"
             type="email"
             autoComplete="email"
-            placeholder="you@merna.example"
+            placeholder="Email address"
             required
             autoFocus
           />

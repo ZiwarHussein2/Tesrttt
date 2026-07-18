@@ -180,7 +180,7 @@ export default async function BranchesPage({ searchParams }: { searchParams: Pro
                           name="ids"
                           value={r.id}
                           aria-label={`Select ${r.name} for comparison`}
-                          className="h-3.5 w-3.5 accent-[#171717]"
+                          className="h-3.5 w-3.5"
                         />
                       </Td>
                     )}

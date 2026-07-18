@@ -18,7 +18,7 @@ export function Sparkline({
   const points = data
     .map((v, i) => `${(i * step).toFixed(1)},${(height - 2 - ((v - min) / span) * (height - 4)).toFixed(1)}`)
     .join(" ");
-  const color = negative ? "#c50000" : "#171717";
+  const color = negative ? "var(--color-critical-deep)" : "var(--chart-ink)";
   return (
     <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} aria-hidden className="shrink-0">
       <polyline points={points} fill="none" stroke={color} strokeWidth="1.25" strokeLinejoin="round" strokeLinecap="round" opacity="0.75" />

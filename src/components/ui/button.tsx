@@ -6,13 +6,13 @@ type Size = "sm" | "md" | "lg" | "icon";
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-primary text-on-primary hover:bg-[#000000] disabled:bg-[#8f8f8f]",
+    "bg-primary text-on-primary hover:bg-primary/85",
   secondary:
     "bg-canvas text-ink border border-hairline hover:border-hairline-strong hover:bg-canvas-soft disabled:text-mute",
   ghost: "bg-transparent text-body hover:bg-canvas-soft-2 hover:text-ink",
   danger:
     "bg-canvas text-critical-deep border border-critical-soft hover:border-critical hover:bg-critical-soft/40",
-  ai: "bg-ai text-white hover:bg-violet-deep",
+  ai: "bg-ai text-white hover:bg-ai/85",
 };
 
 const sizes: Record<Size, string> = {

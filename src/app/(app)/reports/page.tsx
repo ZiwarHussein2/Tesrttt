@@ -111,7 +111,7 @@ export default async function ReportsPage({
               <div className="flex justify-end border-t border-hairline pt-4">
                 <button
                   type="submit"
-                  className="inline-flex h-9 items-center gap-2 rounded-md bg-primary px-4 text-[13px] font-medium text-on-primary hover:bg-black"
+                  className="inline-flex h-9 items-center gap-2 rounded-md bg-primary px-4 text-[13px] font-medium text-on-primary hover:bg-primary/85"
                 >
                   <FileOutput size={14} />
                   Generate report
