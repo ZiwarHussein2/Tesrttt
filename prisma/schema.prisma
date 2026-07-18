@@ -1,0 +1,841 @@
+// Merna Control Center — data model
+// Provider: SQLite (local). Designed to be portable to PostgreSQL (Supabase) —
+// no SQLite-specific features are used; "enum" fields are strings validated in
+// src/types/enums.ts so they can become native Postgres enums at migration time.
+// Money: whole Iraqi Dinars stored as Float (IQD has no active subunit; integer
+// values are exact in IEEE-754 up to 2^53). Convert to BIGINT/NUMERIC on Postgres.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────── Organization ───────────────────────────
+
+model Company {
+  id             String   @id @default(cuid())
+  name           String
+  legalName      String?
+  registrationNo String?
+  currency       String   @default("IQD")
+  timezone       String   @default("Asia/Baghdad")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  branches        Branch[]
+  employees       Employee[]
+  policies        Policy[]
+  patients        Patient[]
+  referralDoctors ReferralDoctor[]
+  reportDoctors   ReportDoctor[]
+  shareholders    Shareholder[]
+  boardMeetings   BoardMeeting[]
+}
+
+model Branch {
+  id        String    @id @default(cuid())
+  companyId String
+  company   Company   @relation(fields: [companyId], references: [id])
+  name      String
+  code      String    @unique
+  city      String
+  address   String?
+  phone     String?
+  email     String?
+  status    String    @default("OPERATING") // OPERATING | LIMITED | SUSPENDED | SETUP | CLOSED
+  openedAt  DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  departments        Department[]
+  employees          Employee[]
+  users              User[]
+  visits             Visit[]
+  incomeEntries      IncomeEntry[]
+  expenses           Expense[]
+  employeeExpenses   EmployeeExpense[]
+  payrollRuns        PayrollRun[]
+  budgets            Budget[]
+  discountRequests   DiscountRequest[]
+  inventoryItems     InventoryItem[]
+  inventoryMovements InventoryMovement[]
+  alerts             Alert[]
+  incidents          Incident[]
+  attendanceRecords  AttendanceRecord[]
+  agreements         Agreement[]
+  referrals          Referral[]
+
+  @@index([companyId])
+}
+
+model Department {
+  id                  String   @id @default(cuid())
+  branchId            String
+  branch              Branch   @relation(fields: [branchId], references: [id])
+  type                String // SONAR | MRI | CT | XRAY | MAMMOGRAPHY | DEXA | OTHER
+  name                String
+  status              String   @default("ACTIVE") // ACTIVE | PAUSED | CLOSED
+  operatingHoursStart String   @default("08:00")
+  operatingHoursEnd   String   @default("21:30")
+  targetWaitMinutes   Int      @default(30)
+  dailyCapacity       Int      @default(40)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  machines           Machine[]
+  services           Service[]
+  employees          Employee[]
+  visits             Visit[]
+  pricingWindows     PricingWindow[]
+  inventoryItems     InventoryItem[]
+  expenses           Expense[]
+  incomeEntries      IncomeEntry[]
+  alerts             Alert[]
+  discountRequests   DiscountRequest[]
+
+  @@index([branchId])
+}
+
+model Machine {
+  id                String    @id @default(cuid())
+  departmentId      String
+  department        Department @relation(fields: [departmentId], references: [id])
+  name              String
+  model             String?
+  serialNumber      String?
+  status            String    @default("AVAILABLE") // AVAILABLE | IN_USE | MAINTENANCE | OFFLINE
+  installedAt       DateTime?
+  lastMaintenanceAt DateTime?
+  notes             String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([departmentId])
+}
+
+model Service {
+  id              String   @id @default(cuid())
+  departmentId    String
+  department      Department @relation(fields: [departmentId], references: [id])
+  name            String
+  code            String
+  basePrice       Float
+  durationMinutes Int      @default(20)
+  reportRequired  Boolean  @default(false)
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  recipeItems ServiceRecipeItem[]
+  visits      Visit[]
+
+  @@index([departmentId])
+}
+
+// Expected consumables per service ("test recipe")
+model ServiceRecipeItem {
+  id              String        @id @default(cuid())
+  serviceId       String
+  service         Service       @relation(fields: [serviceId], references: [id])
+  inventoryItemId String
+  inventoryItem   InventoryItem @relation(fields: [inventoryItemId], references: [id])
+  quantity        Float
+  optional        Boolean       @default(false)
+
+  @@index([serviceId])
+}
+
+// Time-based pricing windows (e.g. MRI/CT day vs evening pricing)
+model PricingWindow {
+  id              String     @id @default(cuid())
+  departmentId    String
+  department      Department @relation(fields: [departmentId], references: [id])
+  name            String
+  startTime       String // "08:00"
+  endTime         String // "14:00"
+  priceMultiplier Float      @default(1)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  @@index([departmentId])
+}
+
+// ─────────────────────────── Identity & access ───────────────────────────
+
+model User {
+  id                 String    @id @default(cuid())
+  email              String    @unique
+  passwordHash       String
+  name               String
+  role               String // SUPER_ADMIN | EXECUTIVE | FINANCE_DIRECTOR | OPERATIONS_DIRECTOR | HR_DIRECTOR | LEGAL_COMPLIANCE | SHAREHOLDER_VIEWER | BRANCH_ADMIN
+  branchId           String?
+  branch             Branch?   @relation(fields: [branchId], references: [id])
+  employeeId         String?   @unique
+  employee           Employee? @relation(fields: [employeeId], references: [id])
+  isActive           Boolean   @default(true)
+  mustChangePassword Boolean   @default(false)
+  mfaEnabled         Boolean   @default(false)
+  lastLoginAt        DateTime?
+  failedLoginCount   Int       @default(0)
+  lockedUntil        DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  sessions        Session[]
+  notifications   Notification[]
+  savedReports    SavedReport[]
+  aiConversations AIConversation[]
+}
+
+model Session {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  tokenHash String    @unique
+  ip        String?
+  userAgent String?
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+// ─────────────────────────── Workforce ───────────────────────────
+
+model Employee {
+  id                String     @id @default(cuid())
+  companyId         String
+  company           Company    @relation(fields: [companyId], references: [id])
+  branchId          String
+  branch            Branch     @relation(fields: [branchId], references: [id])
+  departmentId      String?
+  department        Department? @relation(fields: [departmentId], references: [id])
+  employeeCode      String     @unique
+  firstName         String
+  lastName          String
+  jobTitle          String
+  email             String?
+  phone             String?
+  employmentStatus  String     @default("ACTIVE") // ACTIVE | ON_LEAVE | SUSPENDED | TERMINATED
+  startDate         DateTime
+  endDate           DateTime?
+  baseSalary        Float      @default(0)
+  workScheduleStart String     @default("08:30")
+  workScheduleEnd   String     @default("17:00")
+  workDays          String     @default("0,1,2,3,4,6") // 0=Sun … 6=Sat (Iraq week: Sun–Thu + Sat variants)
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  user              User?
+  attendanceRecords AttendanceRecord[]
+  agreements        Agreement[]
+  policyAcceptances PolicyAcceptance[]
+  expenses          EmployeeExpense[]
+  payrollItems      PayrollItem[]
+
+  @@index([branchId])
+  @@index([departmentId])
+}
+
+model AttendanceRecord {
+  id               String    @id @default(cuid())
+  employeeId       String
+  employee         Employee  @relation(fields: [employeeId], references: [id])
+  branchId         String
+  branch           Branch    @relation(fields: [branchId], references: [id])
+  date             DateTime // normalized to 00:00 UTC of the day
+  scheduledStart   String
+  scheduledEnd     String
+  checkIn          DateTime?
+  checkOut         DateTime?
+  status           String    @default("PRESENT") // PRESENT | LATE | ABSENT | LEAVE | HOLIDAY
+  lateMinutes      Int       @default(0)
+  overtimeMinutes  Int       @default(0)
+  deviceMatch      String    @default("UNKNOWN") // MATCHED | MISMATCH | UNKNOWN
+  networkMatch     String    @default("UNKNOWN")
+  locationStatus   String    @default("UNAVAILABLE") // INSIDE_ZONE | OUTSIDE_ZONE | UNAVAILABLE | REVIEW
+  exception        Boolean   @default(false)
+  exceptionType    String?
+  reviewStatus     String    @default("NONE") // NONE | PENDING | REVIEWED
+  notes            String?
+  correctionReason String?
+  correctedById    String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@unique([employeeId, date])
+  @@index([branchId, date])
+}
+
+model Agreement {
+  id                  String    @id @default(cuid())
+  employeeId          String
+  employee            Employee  @relation(fields: [employeeId], references: [id])
+  branchId            String
+  branch              Branch    @relation(fields: [branchId], references: [id])
+  title               String
+  version             Int       @default(1)
+  body                String
+  compensationSummary String?
+  status              String    @default("DRAFT") // DRAFT | ISSUED | ACCEPTED | DECLINED | SUPERSEDED | TERMINATED
+  issuedAt            DateTime?
+  acceptedAt          DateTime?
+  acceptanceStatement String?
+  otpVerified         Boolean   @default(false)
+  deviceRecorded      Boolean   @default(false)
+  networkRecorded     Boolean   @default(false)
+  locationRecorded    Boolean   @default(false)
+  pdfHash             String?
+  supersededById      String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@index([employeeId])
+  @@index([branchId])
+}
+
+model Policy {
+  id            String    @id @default(cuid())
+  companyId     String
+  company       Company   @relation(fields: [companyId], references: [id])
+  category      String // ATTENDANCE | DEVICE_USAGE | LOCATION_MONITORING | DATA_PRIVACY | CONFIDENTIALITY | INFO_SECURITY | MEDICAL_DATA | ACCEPTABLE_USE | CONDUCT | OVERTIME | LEAVE | ASSET_USAGE | INVENTORY
+  title         String
+  version       Int       @default(1)
+  body          String
+  effectiveDate DateTime?
+  status        String    @default("DRAFT") // DRAFT | ACTIVE | SUPERSEDED
+  authorName    String?
+  approverName  String?
+  supersededById String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  acceptances PolicyAcceptance[]
+}
+
+model PolicyAcceptance {
+  id             String   @id @default(cuid())
+  policyId       String
+  policy         Policy   @relation(fields: [policyId], references: [id])
+  employeeId     String
+  employee       Employee @relation(fields: [employeeId], references: [id])
+  acceptedAt     DateTime @default(now())
+  otpVerified    Boolean  @default(false)
+  deviceRecorded Boolean  @default(false)
+
+  @@unique([policyId, employeeId])
+}
+
+// ─────────────────────────── Patients & operations ───────────────────────────
+
+model Patient {
+  id                   String   @id @default(cuid())
+  companyId            String
+  company              Company  @relation(fields: [companyId], references: [id])
+  publicRef            String   @unique // non-guessable public reference (e.g. MRN-XXXXXX)
+  firstName            String
+  lastName             String
+  gender               String? // MALE | FEMALE | OTHER | UNDISCLOSED
+  birthYear            Int?
+  phone                String?
+  consentStatus        String   @default("GRANTED") // GRANTED | WITHDRAWN | PENDING
+  privacyNoticeVersion String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  visits Visit[]
+}
+
+model Visit {
+  id                String     @id @default(cuid())
+  patientId         String
+  patient           Patient    @relation(fields: [patientId], references: [id])
+  branchId          String
+  branch            Branch     @relation(fields: [branchId], references: [id])
+  departmentId      String
+  department        Department @relation(fields: [departmentId], references: [id])
+  serviceId         String?
+  service           Service?   @relation(fields: [serviceId], references: [id])
+  visitNumber       String     @unique
+  qrToken           String     @unique
+  status            String     @default("REGISTERED") // REGISTERED | PAID | WAITING | CALLED | IN_PROGRESS | SCAN_COMPLETED | PRINTING_COMPLETED | REPORT_PENDING | REPORT_COMPLETED | COMPLETED | CANCELLED | RESCHEDULED
+  priority          String     @default("NORMAL") // NORMAL | URGENT
+  price             Float      @default(0)
+  discountAmount    Float      @default(0)
+  paidAmount        Float      @default(0)
+  paymentMethod     String? // CASH | CARD | TRANSFER
+  paymentStatus     String     @default("UNPAID") // UNPAID | PARTIAL | PAID | REFUNDED
+  reportRequired    Boolean    @default(false)
+  reportDoctorId    String?
+  reportDoctor      ReportDoctor? @relation(fields: [reportDoctorId], references: [id])
+  reportRate        Float?
+  reportText        String?
+  registeredAt      DateTime   @default(now())
+  calledAt          DateTime?
+  scanStartedAt     DateTime?
+  scanCompletedAt   DateTime?
+  printedAt         DateTime?
+  reportAssignedAt  DateTime?
+  reportCompletedAt DateTime?
+  completedAt       DateTime?
+  cancelledAt       DateTime?
+  cancelReason      String?
+  rescheduledTo     DateTime?
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  incomeEntries      IncomeEntry[]
+  discountRequests   DiscountRequest[]
+  referral           Referral?
+  inventoryMovements InventoryMovement[]
+
+  @@index([branchId, status])
+  @@index([departmentId, status])
+  @@index([registeredAt])
+}
+
+// ─────────────────────────── Finance ───────────────────────────
+
+model IncomeEntry {
+  id             String      @id @default(cuid())
+  branchId       String
+  branch         Branch      @relation(fields: [branchId], references: [id])
+  departmentId   String?
+  department     Department? @relation(fields: [departmentId], references: [id])
+  visitId        String?
+  visit          Visit?      @relation(fields: [visitId], references: [id])
+  category       String      @default("PATIENT_SERVICE") // PATIENT_SERVICE | OTHER
+  description    String?
+  amount         Float
+  method         String      @default("CASH") // CASH | CARD | TRANSFER
+  receivedAt     DateTime    @default(now())
+  recordedByName String
+  createdAt      DateTime    @default(now())
+
+  @@index([branchId, receivedAt])
+}
+
+model Expense {
+  id              String      @id @default(cuid())
+  branchId        String
+  branch          Branch      @relation(fields: [branchId], references: [id])
+  departmentId    String?
+  department      Department? @relation(fields: [departmentId], references: [id])
+  category        String // SALARIES | OVERTIME | REIMBURSEMENTS | RENT | ELECTRICITY | WATER | INTERNET | MAINTENANCE | EQUIPMENT | MEDICAL_CONSUMABLES | FILMS | PAPERS | DVDS | PRINTING | CLEANING | TRANSPORTATION | MARKETING | PROFESSIONAL_FEES | SOFTWARE | SECURITY | OTHER
+  vendor          String?
+  description     String
+  amount          Float
+  expenseDate     DateTime
+  paymentMethod   String      @default("CASH")
+  submittedById   String
+  submittedByName String
+  reviewedById    String?
+  reviewedByName  String?
+  status          String      @default("SUBMITTED") // SUBMITTED | UNDER_REVIEW | APPROVED | REJECTED
+  attachmentPath  String?
+  anomalyScore    Float       @default(0)
+  notes           String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@index([branchId, expenseDate])
+  @@index([category])
+}
+
+model EmployeeExpense {
+  id             String   @id @default(cuid())
+  employeeId     String
+  employee       Employee @relation(fields: [employeeId], references: [id])
+  branchId       String
+  branch         Branch   @relation(fields: [branchId], references: [id])
+  category       String // TRAVEL | TRANSPORT | MEALS | SUPPLIES | COMMUNICATION | OVERTIME_COST | TRAINING | PETTY_CASH | OTHER
+  description    String
+  amount         Float
+  expenseDate    DateTime
+  status         String   @default("SUBMITTED") // SUBMITTED | APPROVED | REJECTED | REIMBURSED
+  reviewedByName String?
+  duplicateFlag  Boolean  @default(false)
+  anomalyFlag    Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([branchId, expenseDate])
+  @@index([employeeId])
+}
+
+model PayrollRun {
+  id             String   @id @default(cuid())
+  branchId       String
+  branch         Branch   @relation(fields: [branchId], references: [id])
+  period         String // YYYY-MM
+  status         String   @default("DRAFT") // DRAFT | APPROVED | PAID
+  createdByName  String
+  approvedByName String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  items PayrollItem[]
+
+  @@unique([branchId, period])
+}
+
+model PayrollItem {
+  id                   String     @id @default(cuid())
+  payrollRunId         String
+  payrollRun           PayrollRun @relation(fields: [payrollRunId], references: [id])
+  employeeId           String
+  employee             Employee   @relation(fields: [employeeId], references: [id])
+  baseSalary           Float      @default(0)
+  overtimeAmount       Float      @default(0)
+  bonuses              Float      @default(0)
+  deductions           Float      @default(0)
+  attendanceDeductions Float      @default(0)
+  reimbursements       Float      @default(0)
+  netAmount            Float      @default(0)
+
+  @@unique([payrollRunId, employeeId])
+}
+
+model Budget {
+  id        String   @id @default(cuid())
+  branchId  String
+  branch    Branch   @relation(fields: [branchId], references: [id])
+  category  String? // null = whole-branch budget; else expense category
+  period    String // YYYY-MM
+  amount    Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([branchId, period, category])
+}
+
+model DiscountRequest {
+  id              String      @id @default(cuid())
+  branchId        String
+  branch          Branch      @relation(fields: [branchId], references: [id])
+  departmentId    String?
+  department      Department? @relation(fields: [departmentId], references: [id])
+  visitId         String?
+  visit           Visit?      @relation(fields: [visitId], references: [id])
+  type            String      @default("MANUAL") // MANUAL | CODE | REFERRAL_CONVERSION
+  code            String?
+  oldPrice        Float
+  newPrice        Float
+  reason          String
+  requestedByName String
+  reviewedByName  String?
+  status          String      @default("PENDING") // PENDING | APPROVED | REJECTED
+  decidedAt       DateTime?
+  createdAt       DateTime    @default(now())
+
+  @@index([branchId, status])
+}
+
+model DiscountCode {
+  id            String    @id @default(cuid())
+  code          String    @unique
+  percent       Float?
+  amount        Float?
+  active        Boolean   @default(true)
+  validFrom     DateTime?
+  validTo       DateTime?
+  maxUses       Int?
+  usedCount     Int       @default(0)
+  createdByName String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// ─────────────────────────── Doctors ───────────────────────────
+
+model ReferralDoctor {
+  id             String   @id @default(cuid())
+  companyId      String
+  company        Company  @relation(fields: [companyId], references: [id])
+  name           String
+  specialty      String?
+  phone          String?
+  dealType       String   @default("FIXED") // FIXED | PERCENT | NONE | DISCOUNT_CONVERSION
+  fixedAmount    Float?
+  percent        Float?
+  contractStatus String   @default("ACTIVE") // ACTIVE | SUSPENDED | ENDED
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  referrals Referral[]
+  payments  DoctorPayment[]
+}
+
+model Referral {
+  id                  String         @id @default(cuid())
+  referralDoctorId    String
+  referralDoctor      ReferralDoctor @relation(fields: [referralDoctorId], references: [id])
+  visitId             String         @unique
+  visit               Visit          @relation(fields: [visitId], references: [id])
+  branchId            String
+  branch              Branch         @relation(fields: [branchId], references: [id])
+  commissionAmount    Float          @default(0)
+  convertedToDiscount Boolean        @default(false)
+  createdAt           DateTime       @default(now())
+
+  @@index([referralDoctorId])
+}
+
+model ReportDoctor {
+  id               String   @id @default(cuid())
+  companyId        String
+  company          Company  @relation(fields: [companyId], references: [id])
+  name             String
+  specialty        String?
+  agreedRate       Float    @default(0)
+  contractStatus   String   @default("ACTIVE") // ACTIVE | SUSPENDED | ENDED
+  approvedDevice   Boolean  @default(false)
+  lastAccessRegion String?
+  sessionStatus    String   @default("OFFLINE") // ONLINE | OFFLINE
+  downloadCount    Int      @default(0)
+  suspiciousFlag   Boolean  @default(false)
+  notes            String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  visits   Visit[]
+  payments DoctorPayment[]
+}
+
+model DoctorPayment {
+  id               String          @id @default(cuid())
+  referralDoctorId String?
+  referralDoctor   ReferralDoctor? @relation(fields: [referralDoctorId], references: [id])
+  reportDoctorId   String?
+  reportDoctor     ReportDoctor?   @relation(fields: [reportDoctorId], references: [id])
+  amount           Float
+  paidAt           DateTime        @default(now())
+  method           String          @default("CASH")
+  recordedByName   String
+  notes            String?
+}
+
+// ─────────────────────────── Inventory ───────────────────────────
+
+model InventoryItem {
+  id           String      @id @default(cuid())
+  branchId     String
+  branch       Branch      @relation(fields: [branchId], references: [id])
+  departmentId String?
+  department   Department? @relation(fields: [departmentId], references: [id])
+  name         String
+  category     String // FILM | PAPER | DVD | ENVELOPE | PAPER_TOWEL | PRINTING | SONAR_CONSUMABLE | MEDICAL_CONSUMABLE | CLEANING | OFFICE | OTHER
+  unit         String      @default("unit")
+  quantity     Float       @default(0)
+  minimumLevel Float       @default(0)
+  unitCost     Float       @default(0)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  movements   InventoryMovement[]
+  recipeItems ServiceRecipeItem[]
+
+  @@index([branchId])
+}
+
+model InventoryMovement {
+  id             String        @id @default(cuid())
+  itemId         String
+  item           InventoryItem @relation(fields: [itemId], references: [id])
+  branchId       String
+  branch         Branch        @relation(fields: [branchId], references: [id])
+  type           String // RECEIVED | ISSUED | CONSUMED | WASTED | CORRECTED | RETURNED | TRANSFERRED
+  quantity       Float // positive adds stock, negative removes
+  reason         String?
+  visitId        String?
+  visit          Visit?        @relation(fields: [visitId], references: [id])
+  recordedByName String
+  verifiedByName String?
+  occurredAt     DateTime      @default(now())
+  createdAt      DateTime      @default(now())
+
+  @@index([itemId])
+  @@index([branchId, occurredAt])
+}
+
+// ─────────────────────────── Governance ───────────────────────────
+
+model Alert {
+  id           String      @id @default(cuid())
+  branchId     String?
+  branch       Branch?     @relation(fields: [branchId], references: [id])
+  departmentId String?
+  department   Department? @relation(fields: [departmentId], references: [id])
+  category     String // FINANCIAL | EXPENSE | ATTENDANCE | STAFFING | QUEUE | REPORT_DELAY | INVENTORY | WASTE | SECURITY | PRIVACY | AGREEMENT | POLICY | MACHINE | MANAGEMENT | AI_ANOMALY
+  severity     String      @default("WARNING") // INFO | WARNING | CRITICAL
+  title        String
+  description  String
+  metric       String?
+  value        Float?
+  threshold    Float?
+  status       String      @default("OPEN") // OPEN | ACKNOWLEDGED | RESOLVED
+  ownerName    String?
+  source       String      @default("SYSTEM") // SYSTEM | MANUAL | AI
+  ruleKey      String? // engine key to avoid duplicate open alerts for same condition
+  notes        String?
+  detectedAt   DateTime    @default(now())
+  resolvedAt   DateTime?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([status, severity])
+  @@index([branchId])
+}
+
+model Incident {
+  id               String    @id @default(cuid())
+  branchId         String?
+  branch           Branch?   @relation(fields: [branchId], references: [id])
+  type             String // SECURITY | PRIVACY | OPERATIONAL | FINANCIAL | INVENTORY | ATTENDANCE | EQUIPMENT | DATA_QUALITY | ACCESS_CONTROL
+  severity         String    @default("MEDIUM") // LOW | MEDIUM | HIGH | CRITICAL
+  title            String
+  description      String
+  status           String    @default("DETECTED") // DETECTED | TRIAGED | ASSIGNED | INVESTIGATING | CONTAINED | RESOLVED | REVIEWED | CLOSED
+  ownerName        String?
+  impact           String?
+  rootCause        String?
+  correctiveAction String?
+  detectedAt       DateTime  @default(now())
+  closedAt         DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  events IncidentEvent[]
+
+  @@index([status])
+}
+
+model IncidentEvent {
+  id         String   @id @default(cuid())
+  incidentId String
+  incident   Incident @relation(fields: [incidentId], references: [id])
+  note       String
+  byName     String
+  createdAt  DateTime @default(now())
+
+  @@index([incidentId])
+}
+
+// Append-only. No update or delete paths exist in the application layer.
+model AuditEvent {
+  id            String   @id @default(cuid())
+  userId        String?
+  userName      String
+  role          String
+  branchId      String?
+  departmentId  String?
+  action        String // e.g. visit.create, expense.approve, auth.login
+  resourceType  String
+  resourceId    String?
+  resourceLabel String?
+  oldValue      String? // JSON
+  newValue      String? // JSON
+  reason        String?
+  result        String   @default("SUCCESS") // SUCCESS | DENIED | FAILURE
+  riskLevel     String   @default("LOW") // LOW | MEDIUM | HIGH
+  ip            String?
+  correlationId String?
+  createdAt     DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([resourceType, resourceId])
+  @@index([userId])
+}
+
+model Notification {
+  id           String    @id @default(cuid())
+  userId       String
+  user         User      @relation(fields: [userId], references: [id])
+  category     String // CRITICAL_ALERT | EXPENSE_ANOMALY | ATTENDANCE | REPORT_DELAY | LOW_STOCK | WASTE | AGREEMENT | POLICY | SECURITY | PRIVACY | AI_INSIGHT | PDF_READY | MANAGEMENT
+  title        String
+  body         String?
+  link         String?
+  readAt       DateTime?
+  snoozedUntil DateTime?
+  createdAt    DateTime  @default(now())
+
+  @@index([userId, readAt])
+}
+
+model Shareholder {
+  id               String   @id @default(cuid())
+  companyId        String
+  company          Company  @relation(fields: [companyId], references: [id])
+  name             String
+  ownershipPercent Float    @default(0)
+  votingPercent    Float?
+  email            String?
+  notes            String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model BoardMeeting {
+  id          String   @id @default(cuid())
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id])
+  title       String
+  scheduledAt DateTime
+  agenda      String?
+  minutes     String?
+  resolutions String?
+  status      String   @default("SCHEDULED") // SCHEDULED | HELD | CANCELLED
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ─────────────────────────── Reports & AI ───────────────────────────
+
+model SavedReport {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  type      String
+  title     String
+  params    String // JSON of builder configuration
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model AIConversation {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  title     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messages AIMessage[]
+
+  @@index([userId])
+}
+
+model AIMessage {
+  id             String         @id @default(cuid())
+  conversationId String
+  conversation   AIConversation @relation(fields: [conversationId], references: [id])
+  role           String // USER | ASSISTANT
+  content        String // user text, or JSON structured answer for assistant
+  createdAt      DateTime       @default(now())
+
+  @@index([conversationId])
+}
+
+model Setting {
+  key       String   @id
+  value     String // JSON
+  updatedAt DateTime @updatedAt
+}
