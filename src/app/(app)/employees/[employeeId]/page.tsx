@@ -160,17 +160,15 @@ export default async function EmployeePage({
   );
 }
 
-type EmployeeFull = NonNullable<Awaited<ReturnType<typeof getEmployee>>>;
-async function getEmployee(id: string) {
-  return db.employee.findUnique({
-    where: { id },
-    include: {
-      branch: { select: { id: true, name: true } },
-      department: { select: { id: true, name: true } },
-      user: { select: { id: true, email: true, role: true, isActive: true, lastLoginAt: true, mfaEnabled: true } },
-    },
-  });
-}
+// Shape of the employee record loaded in the page above (kept in sync with its include).
+type EmployeeFull = NonNullable<Awaited<ReturnType<typeof db.employee.findUnique<{
+  where: { id: string };
+  include: {
+    branch: { select: { id: true; name: true } };
+    department: { select: { id: true; name: true } };
+    user: { select: { id: true; email: true; role: true; isActive: true; lastLoginAt: true; mfaEnabled: true } };
+  };
+}>>>>;
 
 function Overview({ employee, masked, salaryMasked }: { employee: EmployeeFull; masked: boolean; salaryMasked: boolean }) {
   return (

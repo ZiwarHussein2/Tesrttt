@@ -9,7 +9,7 @@ import { maybeRunAlertScan } from "@/lib/analytics/alerts";
 import { ALERT_CATEGORIES, ALERT_SEVERITIES } from "@/types/enums";
 import type { ActionState } from "@/lib/action-state";
 
-export async function runAlertScan(_prev: ActionState, _fd: FormData): Promise<ActionState> {
+export async function runAlertScan(): Promise<ActionState> {
   const g = await guardWrite("alerts");
   if (g.error) return g.error;
   const result = await maybeRunAlertScan(true);

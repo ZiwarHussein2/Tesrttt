@@ -14,7 +14,6 @@ import { TableShell, THead, Th, Tr, Td, TableEmpty } from "@/components/ui/table
 import { ExportCsvButton } from "@/components/ui/export-button";
 import { HBarList } from "@/components/ui/viz";
 import { inventoryStats } from "@/lib/analytics/metrics";
-import { MOVEMENT_TYPE_LABELS } from "@/types/enums";
 
 export const metadata: Metadata = { title: "Waste & Variance" };
 

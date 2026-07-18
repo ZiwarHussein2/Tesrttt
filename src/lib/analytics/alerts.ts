@@ -308,6 +308,30 @@ export async function maybeRunAlertScan(force = false): Promise<{ ran: boolean; 
         },
       });
       created++;
+      // Critical alerts notify leadership and the affected branch admin.
+      if (c.severity === "CRITICAL") {
+        const recipients = await db.user.findMany({
+          where: {
+            isActive: true,
+            OR: [
+              { role: { in: ["SUPER_ADMIN", "EXECUTIVE"] } },
+              ...(c.branchId ? [{ role: "BRANCH_ADMIN", branchId: c.branchId }] : []),
+            ],
+          },
+          select: { id: true },
+        });
+        if (recipients.length) {
+          await db.notification.createMany({
+            data: recipients.map((r) => ({
+              userId: r.id,
+              category: "CRITICAL_ALERT",
+              title: c.title,
+              body: c.description,
+              link: "/alerts",
+            })),
+          });
+        }
+      }
     }
   }
 

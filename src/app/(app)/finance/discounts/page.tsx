@@ -10,7 +10,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { KpiCard } from "@/components/ui/kpi-card";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Badge, statusTone } from "@/components/ui/badge";
-import { TableShell, THead, Th, Tr, Td, TableEmpty } from "@/components/ui/table";
+import { TableShell, THead, Th, Tr, Td } from "@/components/ui/table";
 import { Toolbar, FilterSelect } from "@/components/ui/toolbar";
 import { ExportCsvButton } from "@/components/ui/export-button";
 import { ActionButton, ActionDialog } from "@/components/ui/dialog";

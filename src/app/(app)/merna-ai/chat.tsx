@@ -4,7 +4,6 @@ import * as React from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowRight, Bookmark, Download, Loader2, Send, Sparkles } from "lucide-react";
-import { cn } from "@/lib/cn";
 import type { MernaAIAnswer } from "@/lib/ai/provider";
 import { askMerna, saveInsight } from "./actions";
 import { downloadAnswerPdf } from "@/lib/pdf/pdf";

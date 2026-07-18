@@ -8,7 +8,7 @@ import { maskingFor } from "@/lib/permissions";
 import {
   attendanceStats, financeSummary, revenueExpenseTrend, visitStats,
 } from "@/lib/analytics/metrics";
-import { fmtIQDCompact, fmtNumber, fmtPercent, pctChange } from "@/lib/format";
+import { fmtIQDCompact, fmtPercent, pctChange } from "@/lib/format";
 import { PageHeader } from "@/components/ui/page-header";
 import { EmptyState } from "@/components/ui/empty-state";
 import { KpiCard } from "@/components/ui/kpi-card";

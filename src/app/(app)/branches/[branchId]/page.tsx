@@ -28,7 +28,7 @@ import { TrendLines } from "@/components/ui/charts";
 import { Input, Label, Select, Hint } from "@/components/ui/input";
 import {
   BRANCH_STATUS_LABELS, DEPARTMENT_TYPES, DEPARTMENT_TYPE_LABELS,
-  EXPENSE_CATEGORY_LABELS, MACHINE_STATUSES, MACHINE_STATUS_LABELS,
+  EXPENSE_CATEGORY_LABELS, MACHINE_STATUS_LABELS,
   PAYMENT_METHOD_LABELS, VISIT_STATUS_LABELS,
 } from "@/types/enums";
 import { updateBranch } from "../actions";

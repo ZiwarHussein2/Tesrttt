@@ -95,7 +95,7 @@ export default async function BudgetsPage() {
           <option value="">— Whole branch (total budget) —</option>
           {EXPENSE_CATEGORIES.map((c) => <option key={c} value={c}>{EXPENSE_CATEGORY_LABELS[c]}</option>)}
         </Select>
-        <Hint>Leave empty for the branch's total monthly budget.</Hint>
+        <Hint>Leave empty for the branch&apos;s total monthly budget.</Hint>
       </div>
     </ActionDialog>
   ) : undefined;

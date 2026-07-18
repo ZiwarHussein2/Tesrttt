@@ -6,7 +6,7 @@ import { requireUser } from "@/lib/auth";
 import { getScope } from "@/lib/scope";
 import { maskingFor } from "@/lib/permissions";
 import { attendanceStats, dayBuckets } from "@/lib/analytics/metrics";
-import { fmtDuration, fmtIQDCompact, fmtNumber, fmtPercent } from "@/lib/format";
+import { fmtDuration, fmtIQDCompact, fmtPercent } from "@/lib/format";
 import { PageHeader } from "@/components/ui/page-header";
 import { EmptyState } from "@/components/ui/empty-state";
 import { KpiCard } from "@/components/ui/kpi-card";
