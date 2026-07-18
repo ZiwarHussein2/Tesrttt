@@ -66,6 +66,11 @@ src/types/enums.ts single registry of all status values
 docs/              architecture, integration contract, Supabase migration, AI boundary
 ```
 
+## Screenshots
+
+A visual preview of the system (light & dark, desktop & mobile) is in
+[`docs/SCREENSHOTS.md`](docs/SCREENSHOTS.md).
+
 ## Documentation
 
 - `docs/ARCHITECTURE.md` — how the system is put together and why
