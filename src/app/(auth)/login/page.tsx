@@ -4,6 +4,9 @@ import { db } from "@/lib/db";
 import { getSessionUser } from "@/lib/auth";
 import { LoginForm } from "./login-form";
 
+// The first-run check must run per request, never at build time.
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = { title: "Sign in" };
 
 export default async function LoginPage() {
